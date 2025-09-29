@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>위치 크기 계산기</title>
+    <style>
+        /* Google Fonts에서 Inter 폰트 가져오기 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* 기본 스타일 초기화 및 설정 */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #1a202c;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 전체 레이아웃 컨테이너 */
+        .main-container {
+            width: 100%;
+            max-width: 650px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        /* 계산기와 설명 섹션을 위한 카드 스타일 */
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 제목 스타일 */
+        h1, h2 {
+            text-align: center;
+            color: #2c5282;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* 입력 및 결과 그룹 스타일 */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        /* 라벨 스타일 */
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        /* 숫자 입력 필드 스타일 */
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+
+        /* 계산 버튼 스타일 */
+        .calculate-btn {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: linear-gradient(90deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+        }
+
+        /* 결과 표시 섹션 스타일 */
+        .results-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* 결과 표시 필드 스타일 (읽기 전용) */
+        .results-section input {
+            background-color: #f7fafc;
+            color: #2d3748;
+            font-weight: 700;
+            border-color: #e2e8f0;
+        }
+
+        /* 설명 텍스트 스타일 */
+        .explanation-card h3 {
+            color: #2c5282;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .explanation-card p {
+            margin-bottom: 1rem;
+            color: #4a5568;
+        }
+
+        .explanation-card b {
+            color: #2d3748;
+        }
+        
+        /* 모바일 반응형 디자인 */
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- 계산기 카드 -->
+        <div class="card">
+            <h1>위치 크기 계산기</h1>
+
+            <!-- 입력 폼 -->
+            <div class="form-group">
+                <label for="balance">1. 전체 거래 잔액 ($)</label>
+                <input type="number" id="balance" placeholder="예: 1000">
+            </div>
+
+            <div class="form-group">
+                <label for="stopLoss">2. 손절매 (%)</label>
+                <input type="number" id="stopLoss" placeholder="예: 2.5">
+            </div>
+
+            <div class="form-group">
+                <label for="riskLevel">3. 위험 수준 (%)</label>
+                <input type="number" id="riskLevel" placeholder="예: 1">
+            </div>
+
+            <div class="form-group">
+                <label for="leverage">4. 레버리지 (x)</label>
+                <input type="number" id="leverage" placeholder="예: 20">
+            </div>
+
+            <button class="calculate-btn" onclick="calculatePosition()">계산하기</button>
+
+            <!-- 결과 표시 -->
+            <div class="results-section">
+                <h2>계산 결과</h2>
+                <div class="form-group">
+                    <label for="maxLoss">최대 손실 ($)</label>
+                    <input type="text" id="maxLoss" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="positionSize">총 포지션 규모 ($)</label>
+                    <input type="text" id="positionSize" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="requiredMargin">필수 증거금 ($)</label>
+                    <input type="text" id="requiredMargin" readonly>
+                </div>
+            </div>
+        </div>
+
+        <!-- 설명 카드 -->
+        <div class="card explanation-card">
+            <h3>입력 설명</h3>
+            <p><b>1. 거래 잔고:</b> 레버리지를 제외한 실제 계좌에 보유하고 있는 총 자산입니다. 계좌 규모가 $1000인 경우, $1000을 입력합니다.</p>
+            <p><b>2. 손절매 %:</b> 진입 가격 대비 손절매 주문을 설정할 가격의 변동률입니다. 예를 들어, 가격이 2.5% 불리하게 움직이면 거래를 종료하도록 설정했다면 손절매는 2.5%입니다.</p>
+            <p><b>3. 위험 수준 %:</b> 손절매가 발생했을 때, 총 거래 잔고의 몇 %까지 손실을 감수할 것인지를 의미합니다. 대부분의 전문 트레이더는 1% 미만으로 설정합니다.</p>
+            <p><b>4. 레버리지:</b> 거래소에서 사용하는 자본금의 배수입니다. 레버리지는 수익과 손실을 모두 증폭시키므로 신중하게 사용해야 합니다.</p>
+        </div>
+    </div>
+
+    <script>
+        function calculatePosition() {
+            // 입력 값 가져오기
+            const balance = parseFloat(document.getElementById('balance').value);
+            const stopLossPercent = parseFloat(document.getElementById('stopLoss').value);
+            const riskLevelPercent = parseFloat(document.getElementById('riskLevel').value);
+            const leverage = parseFloat(document.getElementById('leverage').value);
+
+            // 입력 값 유효성 검사
+            if (isNaN(balance) || isNaN(stopLossPercent) || isNaN(riskLevelPercent) || isNaN(leverage) || balance <= 0 || stopLossPercent <= 0 || riskLevelPercent <= 0 || leverage < 1) {
+                // 유효하지 않은 입력이 있을 경우, 결과 필드를 초기화합니다.
+                document.getElementById('maxLoss').value = '';
+                document.getElementById('positionSize').value = '';
+                document.getElementById('requiredMargin').value = '';
+                // 사용자에게 유효한 값을 입력하라는 메시지를 표시할 수 있습니다.
+                // (alert 대신 UI에 메시지를 표시하는 것이 더 좋습니다)
+                if (!document.querySelector('.error-message')) {
+                    const button = document.querySelector('.calculate-btn');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.textContent = '모든 필드에 0보다 큰 유효한 숫자를 입력해주세요. (레버리지는 1 이상)';
+                    errorDiv.style.color = 'red';
+                    errorDiv.style.textAlign = 'center';
+                    errorDiv.style.marginTop = '10px';
+                    errorDiv.className = 'error-message';
+                    button.parentNode.insertBefore(errorDiv, button.nextSibling);
+                    setTimeout(() => errorDiv.remove(), 3000);
+                }
+                return;
+            }
+             // 에러 메시지 제거
+            const existingError = document.querySelector('.error-message');
+            if(existingError) existingError.remove();
+
+
+            // --- 계산 로직 ---
+            // 1. 최대 손실 금액 계산 ($)
+            // (거래 잔고 * 위험 수준 %)
+            const maxLoss = balance * (riskLevelPercent / 100);
+
+            // 2. 총 포지션 규모 계산 ($)
+            // (최대 손실 금액 / 손절매 %)
+            const positionSize = maxLoss / (stopLossPercent / 100);
+
+            // 3. 필수 증거금 계산 ($)
+            // (총 포지션 규모 / 레버리지)
+            const requiredMargin = positionSize / leverage;
+            
+            // --- 결과 표시 ---
+            // 계산된 값을 소수점 둘째 자리까지 포맷팅하여 표시합니다.
+            document.getElementById('maxLoss').value = `$${maxLoss.toFixed(2)}`;
+            document.getElementById('positionSize').value = `$${positionSize.toFixed(2)}`;
+            document.getElementById('requiredMargin').value = `$${requiredMargin.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
+
