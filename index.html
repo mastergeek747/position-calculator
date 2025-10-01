@@ -3,268 +3,715 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>포지션 크기 계산기</title>
+    <title>통합 투자 계산기</title>
     <style>
-        /* Google Fonts에서 Inter 폰트 가져오기 */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
         /* 기본 스타일 초기화 및 설정 */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #1a202c;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            padding: 2rem;
-            line-height: 1.6;
+            margin: 0;
+            background-color: #f7f9fc;
+            padding: 20px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-
-        /* 전체 레이아웃 컨테이너 */
         .main-container {
             width: 100%;
             max-width: 650px;
             display: flex;
             flex-direction: column;
-            gap: 2rem;
+            gap: 20px;
         }
-        
-        /* 계산기와 설명 섹션을 위한 카드 스타일 */
-        .card {
+        .calculator-container, .history-container {
+            width: 100%;
             background-color: #ffffff;
+            padding: 35px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            padding: 2rem;
-            transition: box-shadow 0.3s ease-in-out;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eef;
+            box-sizing: border-box;
         }
-
-        .card:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        }
-
-        /* 제목 스타일 */
         h1, h2 {
             text-align: center;
-            color: #2c5282;
-            margin-bottom: 1.5rem;
-            font-weight: 700;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        
+        /* 탭 네비게이션 스타일 */
+        .tab-navigation {
+            display: flex;
+            background-color: #eef;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: -20px; /* 계산기 카드와 겹치게 */
+            position: relative;
+            z-index: 1;
         }
 
-        /* 입력 및 결과 그룹 스타일 */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        /* 라벨 스타일 */
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #4a5568;
-            font-size: 0.9rem;
-        }
-
-        /* 숫자 입력 필드 스타일 */
-        input[type="number"], input[type="text"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid #cbd5e0;
-            border-radius: 8px;
+        .tab-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            background-color: transparent;
+            color: #555;
             font-size: 1rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            box-sizing: border-box; /* 패딩과 테두리를 너비에 포함 */
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        .tab-btn.active {
+            background-color: #007bff;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
         }
 
-        /* 계산 버튼 스타일 */
-        .calculate-btn {
+        /* 계산기 컨텐츠 숨기기/보이기 */
+        .calculator-content {
+            display: none;
+        }
+        .calculator-content.active {
+            display: block;
+        }
+
+        table {
             width: 100%;
-            padding: 0.8rem 1rem;
-            background: linear-gradient(90deg, #4299e1, #3182ce);
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 14px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.95em;
+        }
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+        td:first-child {
+            text-align: left;
+            background-color: #f9fafb;
+            font-weight: 600;
+            width: 45%; /* 너비 조정 */
+        }
+        input[type="number"], input[type="text"] {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: all 0.2s ease-in-out;
+        }
+        input[type="number"] {
+             text-align: right;
+        }
+        input[type="text"] {
+             text-align: center;
+        }
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+        }
+        #positionCalculator input {
+            text-align: right;
+            padding-right: 10px;
+        }
+        #positionCalculator input[type="text"] {
+             text-align: center;
+        }
+        .auto-field {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .final-investment {
+            color: #d9534f;
+            font-size: 1.2em;
+        }
+        .stop-loss-amount {
+             color: #0056b3;
+        }
+        .total-capital-row {
+            border-bottom: 2px solid #007bff;
+        }
+        .description-text {
+            font-size: 0.8em;
+            font-weight: normal;
+            color: #777;
+            margin-top: 4px;
+        }
+
+        /* 버튼 스타일 */
+        .action-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: 600;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-top: 1rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: background-color 0.2s, transform 0.2s;
         }
-
-        .calculate-btn:hover {
+        .save-button {
+             background-color: #007bff;
+        }
+        .save-button:hover {
+            background-color: #0056b3;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(49, 130, 206, 0.4);
+        }
+        .calculate-btn {
+            background-color: #28a745;
+        }
+        .calculate-btn:hover {
+            background-color: #1e7e34;
+            transform: translateY(-2px);
         }
 
-        /* 결과 표시 섹션 스타일 */
-        .results-section {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-        }
 
-        /* 결과 표시 필드 스타일 (읽기 전용) */
-        .results-section input {
-            background-color: #f7fafc;
-            color: #2d3748;
-            font-weight: 700;
-            border-color: #e2e8f0;
+        /* 계산 내역 스타일 */
+        .history-container h2 {
+            color: #333;
         }
-
-        /* 설명 텍스트 스타일 */
-        .explanation-card h3 {
-            color: #2c5282;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eef;
+            border-radius: 8px;
+            padding: 10px;
         }
-
-        .explanation-card p {
-            margin-bottom: 1rem;
-            color: #4a5568;
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background-color 0.2s;
         }
-
-        .explanation-card b {
-            color: #2d3748;
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        .history-item:hover {
+            background-color: #f9f9ff;
+        }
+        .history-item-title {
+            font-weight: 600;
+        }
+        .history-item-date {
+            font-size: 0.85em;
+            color: #777;
+        }
+        .clear-history-btn {
+            width: auto;
+            padding: 8px 16px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #d9534f;
+            background-color: #fff;
+            border: 1px solid #d9534f;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .clear-history-btn:hover {
+            background-color: #d9534f;
+            color: white;
         }
         
+        /* 입력칸 + 초기화 버튼 스타일 */
+        .input-with-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-with-button input {
+            flex-grow: 1;
+        }
+        .reset-button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border: 1px solid #ddd;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+        .reset-button:hover {
+            background-color: #eee;
+        }
+        
+        /* 결과 및 설명 섹션 스타일 */
+        .results-section, .explanation-section { 
+            margin-top: 1.5rem; 
+            padding-top: 1.5rem; 
+            border-top: 1px solid #e2e8f0; 
+        }
+        .explanation-section {
+             text-align: left;
+        }
+        .explanation-section h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .explanation-section p {
+            margin-bottom: 1rem;
+            color: #4a5568;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+        .explanation-section b {
+            color: #2d3748;
+        }
+        #positionCalculator .results-section td:first-child { font-weight: 600; color: #4a5568;}
+        #positionCalculator .results-section input { background-color: #f7fafc; color: #2d3748; font-weight: 700; border: 1px solid #e2e8f0; }
+        .error-message { color: red; font-size: 0.9rem; text-align: center; margin-top: 10px; height: 20px; }
+
+
         /* 모바일 반응형 디자인 */
         @media (max-width: 600px) {
-            body {
-                padding: 1rem;
-            }
-            .card {
-                padding: 1.5rem;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
+            body { padding: 1rem; }
+            .calculator-container, .history-container { padding: 1.5rem; }
+            h1 { font-size: 1.5rem; }
+            th, td { padding: 8px; font-size: 0.85em; }
+            .tab-btn { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
-
     <div class="main-container">
-        <!-- 계산기 카드 -->
-        <div class="card">
-            <h1>포지션 크기 계산기</h1>
-
-            <!-- 입력 폼 -->
-            <div class="form-group">
-                <label for="balance">1. 전체 거래 잔액 ($)</label>
-                <input type="number" id="balance" placeholder="예: 1000">
-            </div>
-
-            <div class="form-group">
-                <label for="stopLoss">2. 손절매 (%)</label>
-                <input type="number" id="stopLoss" placeholder="예: 2.5">
-            </div>
-
-            <div class="form-group">
-                <label for="riskLevel">3. 위험 수준 (%)</label>
-                <input type="number" id="riskLevel" placeholder="예: 1">
-            </div>
-
-            <div class="form-group">
-                <label for="leverage">4. 레버리지 (x)</label>
-                <input type="number" id="leverage" placeholder="예: 20">
-            </div>
-
-            <button class="calculate-btn" onclick="calculatePosition()">계산하기</button>
-
-            <!-- 결과 표시 -->
-            <div class="results-section">
-                <h2>계산 결과</h2>
-                <div class="form-group">
-                    <label for="maxLoss">최대 손실 ($)</label>
-                    <input type="text" id="maxLoss" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="positionSize">총 포지션 규모 ($)</label>
-                    <input type="text" id="positionSize" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="requiredMargin">필수 증거금 ($)</label>
-                    <input type="text" id="requiredMargin" readonly>
-                </div>
-            </div>
+        
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="showCalculator('riskCalculator')">리스크 관리</button>
+            <button class="tab-btn" onclick="showCalculator('positionCalculator')">포지션 크기</button>
         </div>
 
-        <!-- 설명 카드 -->
-        <div class="card explanation-card">
-            <h3>입력 설명</h3>
-            <p><b>1. 거래 잔고:</b> 레버리지를 제외한 실제 계좌에 보유하고 있는 총 자산입니다. 계좌 규모가 $1000인 경우, $1000을 입력합니다.</p>
-            <p><b>2. 손절매 %:</b> 진입 가격 대비 손절매 주문을 설정할 가격의 변동률입니다. 예를 들어, 가격이 2.5% 불리하게 움직이면 거래를 종료하도록 설정했다면 손절매는 2.5%입니다.</p>
-            <p><b>3. 위험 수준 %:</b> 손절매가 발생했을 때, 총 거래 잔고의 몇 %까지 손실을 감수할 것인지를 의미합니다. 대부분의 전문 트레이더는 1% 미만으로 설정합니다.</p>
-            <p><b>4. 레버리지:</b> 거래소에서 사용하는 자본금의 배수입니다. 레버리지는 수익과 손실을 모두 증폭시키므로 신중하게 사용해야 합니다.</p>
+        <div class="calculator-container">
+            <!-- 리스크 관리 투자 계산기 -->
+            <div id="riskCalculator" class="calculator-content active">
+                <h1>리스크 관리 투자 계산기</h1>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>항목</th>
+                            <th>원화 (KRW)</th>
+                            <th>달러 (USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="total-capital-row">
+                            <td>총 투자금액 (입력)</td>
+                            <td><input type="number" id="won-total-capital" value="10000000"></td>
+                            <td><input type="number" id="usd-total-capital" value="10000"></td>
+                        </tr>
+                        <tr class="total-capital-row">
+                            <td>리스크 비율 (입력) [%]</td>
+                            <td><input type="number" id="won-risk-percent" value="1" step="0.1"></td>
+                            <td><input type="number" id="usd-risk-percent" value="1" step="0.1"></td>
+                        </tr>
+                        <tr>
+                            <td>손절금액 (자동)</td>
+                            <td class="auto-field stop-loss-amount" id="won-stop-loss-amount">---</td>
+                            <td class="auto-field stop-loss-amount" id="usd-stop-loss-amount">---</td>
+                        </tr>
+                        <tr>
+                            <td>투자 종목 (입력)</td>
+                            <td colspan="2">
+                                <div class="input-with-button">
+                                    <input type="text" id="investment-item" placeholder="예: 삼성전자, 비트코인">
+                                    <button id="reset-prices-btn" class="reset-button" title="진입가/청산가 초기화">초기화</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>진입가 (입력)</td>
+                            <td><input type="number" id="won-entry" value="585000"></td>
+                            <td><input type="number" id="usd-entry" value="10000"></td>
+                        </tr>
+                        <tr>
+                            <td>청산가 (입력)</td>
+                            <td><input type="number" id="won-exit" value="516000"></td>
+                            <td><input type="number" id="usd-exit" value="9000"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                소모비용 (입력) [%]
+                                <div class="description-text">수수료 등 발생하는 비용</div>
+                            </td>
+                            <td><input type="number" id="won-cost" value="1" step="0.1"></td>
+                            <td><input type="number" id="usd-cost" value="1" step="0.1"></td>
+                        </tr>
+                        <tr>
+                            <td>손절폭 (자동)</td>
+                            <td class="auto-field" id="won-stop-loss-percent">---</td>
+                            <td class="auto-field" id="usd-stop-loss-percent">---</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1회 투자금액 (자동)</strong></td>
+                            <td class="auto-field final-investment" id="won-investment">---</td>
+                            <td class="auto-field final-investment" id="usd-investment">---</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button id="save-history-btn" class="action-button save-button">계산 내역 저장</button>
+            </div>
+            
+            <!-- 포지션 크기 계산기 (스타일 변경됨) -->
+            <div id="positionCalculator" class="calculator-content">
+                 <h1>포지션 크기 계산기</h1>
+                 <table>
+                     <tbody>
+                        <tr>
+                            <td>투자 종목</td>
+                            <td><input type="text" id="position-item" placeholder="예: Apple, Tesla"></td>
+                        </tr>
+                        <tr>
+                            <td>총 투자금액 ($)</td>
+                            <td><input type="number" id="balance" placeholder="1000"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                손절매 (%)
+                                <div class="description-text">포지션 규모 계산에 사용</div>
+                            </td>
+                            <td><input type="number" id="stopLoss" placeholder="2.5"></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                위험 수준 (%)
+                                <div class="description-text">최대 손실액 계산에 사용</div>
+                            </td>
+                            <td><input type="number" id="riskLevel" placeholder="1"></td>
+                        </tr>
+                        <tr>
+                            <td>레버리지 (x)</td>
+                            <td><input type="number" id="leverage" placeholder="20"></td>
+                        </tr>
+                     </tbody>
+                 </table>
+
+                <button class="action-button calculate-btn" onclick="calculateAndSavePosition()">계산 및 내역 저장</button>
+                <div id="position-error" class="error-message"></div>
+
+                <div class="results-section">
+                    <h2>계산 결과</h2>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>최대 손실 ($)</td>
+                                <td class="auto-field"><input type="text" id="maxLoss" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>총 포지션 규모 ($)</td>
+                                <td class="auto-field"><input type="text" id="positionSize" readonly></td>
+                            </tr>
+                            <tr>
+                                <td>필수 증거금 ($)</td>
+                                <td class="auto-field"><input type="text" id="requiredMargin" readonly></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="explanation-section">
+                    <h2>입력 설명</h2>
+                    <p><b>총 투자금액 ($):</b> 레버리지를 제외한 실제 계좌에 보유하고 있는 총 자산입니다.</p>
+                    <p><b>손절매 (%):</b> 최대 손실액을 바탕으로, 진입할 총 포지션의 크기를 결정합니다. 손절매 폭이 좁을수록 포지션 규모는 커집니다.</p>
+                    <p><b>위험 수준 (%):</b> 총 투자금액 대비 이번 거래에서 감수할 최대 손실 비율(%)을 설정합니다. 이 비율로 실제 최대 손실 금액($)이 결정됩니다.</p>
+                    <p><b>레버리지 (x):</b> 거래소에서 사용하는 자본금의 배수입니다. 레버리지는 수익과 손실을 모두 증폭시키므로 신중하게 사용해야 합니다.</p>
+                </div>
+            </div>
+
         </div>
+        
+        <div class="history-container" id="history-container">
+            <h2 id="history-title">계산 내역</h2>
+            <div class="history-list" id="history-list">
+                <!-- 계산 내역이 여기에 동적으로 추가됩니다. -->
+            </div>
+            <button id="clear-history-btn" class="clear-history-btn">내역 전체 삭제</button>
+        </div>
+
     </div>
 
     <script>
-        function calculatePosition() {
-            // 입력 값 가져오기
+        // --- 탭 전환 로직 ---
+        function showCalculator(calculatorId) {
+            document.querySelectorAll('.calculator-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById(calculatorId).classList.add('active');
+            document.querySelector(`.tab-btn[onclick="showCalculator('${calculatorId}')"]`).classList.add('active');
+            
+            const historyContainer = document.getElementById('history-container');
+            const historyTitle = document.getElementById('history-title');
+            const clearBtn = document.getElementById('clear-history-btn');
+
+            if (calculatorId === 'riskCalculator') {
+                historyTitle.textContent = '계산 내역 (리스크 관리)';
+                loadRiskHistory();
+                clearBtn.onclick = clearRiskHistory;
+                historyContainer.style.display = 'block';
+            } else if (calculatorId === 'positionCalculator') {
+                historyTitle.textContent = '계산 내역 (포지션 크기)';
+                loadPositionHistory();
+                clearBtn.onclick = clearPositionHistory;
+                historyContainer.style.display = 'block';
+            }
+        }
+
+        // --- 리스크 관리 내역 로직 ---
+        const riskHistoryKey = 'riskInvestmentHistory';
+
+        function saveRiskHistory() {
+            const historyEntry = {
+                id: Date.now(),
+                date: new Date().toLocaleString('ko-KR'),
+                item: document.getElementById('investment-item').value || '이름 없는 계획',
+                wonCapital: document.getElementById('won-total-capital').value,
+                usdCapital: document.getElementById('usd-total-capital').value,
+                wonRisk: document.getElementById('won-risk-percent').value,
+                usdRisk: document.getElementById('usd-risk-percent').value,
+                wonEntry: document.getElementById('won-entry').value,
+                usdEntry: document.getElementById('usd-entry').value,
+                wonExit: document.getElementById('won-exit').value,
+                usdExit: document.getElementById('usd-exit').value,
+                wonCost: document.getElementById('won-cost').value,
+                usdCost: document.getElementById('usd-cost').value,
+            };
+
+            let history = JSON.parse(localStorage.getItem(riskHistoryKey)) || [];
+            history.unshift(historyEntry);
+            localStorage.setItem(riskHistoryKey, JSON.stringify(history));
+            loadRiskHistory();
+        }
+
+        function loadRiskHistory() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            let history = JSON.parse(localStorage.getItem(riskHistoryKey)) || [];
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="text-align:center; color:#999;">저장된 내역이 없습니다.</p>';
+                return;
+            }
+
+            history.forEach(entry => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                itemDiv.innerHTML = `
+                    <span class="history-item-title">${entry.item}</span>
+                    <span class="history-item-date">${entry.date}</span>
+                `;
+                itemDiv.onclick = () => restoreRiskHistory(entry.id);
+                historyList.appendChild(itemDiv);
+            });
+        }
+        
+        function restoreRiskHistory(id) {
+            let history = JSON.parse(localStorage.getItem(riskHistoryKey)) || [];
+            const entry = history.find(e => e.id === id);
+            if (entry) {
+                document.getElementById('investment-item').value = entry.item;
+                document.getElementById('won-total-capital').value = entry.wonCapital;
+                document.getElementById('usd-total-capital').value = entry.usdCapital;
+                document.getElementById('won-risk-percent').value = entry.wonRisk;
+                document.getElementById('usd-risk-percent').value = entry.usdRisk;
+                document.getElementById('won-entry').value = entry.wonEntry;
+                document.getElementById('usd-entry').value = entry.usdEntry;
+                document.getElementById('won-exit').value = entry.wonExit;
+                document.getElementById('usd-exit').value = entry.usdExit;
+                document.getElementById('won-cost').value = entry.wonCost;
+                document.getElementById('usd-cost').value = entry.usdCost;
+                calculateRisk();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function clearRiskHistory() {
+            localStorage.removeItem(riskHistoryKey);
+            loadRiskHistory();
+        }
+
+        // --- 포지션 크기 내역 로직 ---
+        const positionHistoryKey = 'positionHistory';
+
+        function savePositionHistory() {
+             const historyEntry = {
+                id: Date.now(),
+                date: new Date().toLocaleString('ko-KR'),
+                item: document.getElementById('position-item').value || '이름 없는 계획',
+                balance: document.getElementById('balance').value,
+                stopLoss: document.getElementById('stopLoss').value,
+                riskLevel: document.getElementById('riskLevel').value,
+                leverage: document.getElementById('leverage').value,
+            };
+            let history = JSON.parse(localStorage.getItem(positionHistoryKey)) || [];
+            history.unshift(historyEntry);
+            localStorage.setItem(positionHistoryKey, JSON.stringify(history));
+            loadPositionHistory();
+        }
+
+        function loadPositionHistory() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            let history = JSON.parse(localStorage.getItem(positionHistoryKey)) || [];
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="text-align:center; color:#999;">저장된 내역이 없습니다.</p>';
+                return;
+            }
+            history.forEach(entry => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                itemDiv.innerHTML = `
+                    <span class="history-item-title">${entry.item}</span>
+                    <span class="history-item-date">${entry.date}</span>
+                `;
+                itemDiv.onclick = () => restorePositionHistory(entry.id);
+                historyList.appendChild(itemDiv);
+            });
+        }
+
+        function restorePositionHistory(id) {
+            let history = JSON.parse(localStorage.getItem(positionHistoryKey)) || [];
+            const entry = history.find(e => e.id === id);
+            if(entry) {
+                document.getElementById('position-item').value = entry.item;
+                document.getElementById('balance').value = entry.balance;
+                document.getElementById('stopLoss').value = entry.stopLoss;
+                document.getElementById('riskLevel').value = entry.riskLevel;
+                document.getElementById('leverage').value = entry.leverage;
+                calculatePosition(false); // 다시 저장하지 않도록 false 전달
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function clearPositionHistory(){
+            localStorage.removeItem(positionHistoryKey);
+            loadPositionHistory();
+        }
+
+        
+        // --- 가격 초기화 로직 ---
+        function resetPrices() {
+            document.getElementById('won-entry').value = '';
+            document.getElementById('usd-entry').value = '';
+            document.getElementById('won-exit').value = '';
+            document.getElementById('usd-exit').value = '';
+            calculateRisk();
+        }
+
+        // --- 리스크 관리 계산기 로직 ---
+        function calculateRisk() {
+            const wonTotalCapital = parseFloat(document.getElementById('won-total-capital').value) || 0;
+            const wonRiskPercent = parseFloat(document.getElementById('won-risk-percent').value) || 0;
+            const wonEntry = parseFloat(document.getElementById('won-entry').value) || 0;
+            const wonExit = parseFloat(document.getElementById('won-exit').value) || 0;
+            const wonCostPercent = parseFloat(document.getElementById('won-cost').value) || 0;
+
+            const wonStopLossAmount = wonTotalCapital * (wonRiskPercent / 100);
+            document.getElementById('won-stop-loss-amount').textContent = wonStopLossAmount.toLocaleString(undefined, { maximumFractionDigits: 0 });
+
+            if (wonEntry > 0) {
+                const priceLossRate = Math.abs(wonEntry - wonExit) / wonEntry;
+                const costRate = wonCostPercent / 100;
+                const totalLossRate = priceLossRate + costRate;
+                document.getElementById('won-stop-loss-percent').textContent = (totalLossRate * 100).toFixed(2) + '%';
+                
+                const investment = (totalLossRate > 0) ? (wonStopLossAmount / totalLossRate) : 0;
+                document.getElementById('won-investment').textContent = Math.round(investment).toLocaleString();
+            } else {
+                document.getElementById('won-stop-loss-percent').textContent = '0.00%';
+                document.getElementById('won-investment').textContent = '0';
+            }
+
+            const usdTotalCapital = parseFloat(document.getElementById('usd-total-capital').value) || 0;
+            const usdRiskPercent = parseFloat(document.getElementById('usd-risk-percent').value) || 0;
+            const usdEntry = parseFloat(document.getElementById('usd-entry').value) || 0;
+            const usdExit = parseFloat(document.getElementById('usd-exit').value) || 0;
+            const usdCostPercent = parseFloat(document.getElementById('usd-cost').value) || 0;
+
+            const usdStopLossAmount = usdTotalCapital * (usdRiskPercent / 100);
+            document.getElementById('usd-stop-loss-amount').textContent = usdStopLossAmount.toLocaleString(undefined, { maximumFractionDigits: 2 });
+            
+            if (usdEntry > 0) {
+                const priceLossRateUSD = Math.abs(usdEntry - usdExit) / usdEntry;
+                const costRateUSD = usdCostPercent / 100;
+                const totalLossRateUSD = priceLossRateUSD + costRateUSD;
+                document.getElementById('usd-stop-loss-percent').textContent = (totalLossRateUSD * 100).toFixed(2) + '%';
+                
+                const investmentUSD = (totalLossRateUSD > 0) ? (usdStopLossAmount / totalLossRateUSD) : 0;
+                document.getElementById('usd-investment').textContent = Math.round(investmentUSD).toLocaleString();
+            } else {
+                document.getElementById('usd-stop-loss-percent').textContent = '0.00%';
+                document.getElementById('usd-investment').textContent = '0';
+            }
+        }
+
+        // --- 포지션 크기 계산기 로직 ---
+        function calculatePosition(shouldSave = true) {
             const balance = parseFloat(document.getElementById('balance').value);
             const stopLossPercent = parseFloat(document.getElementById('stopLoss').value);
             const riskLevelPercent = parseFloat(document.getElementById('riskLevel').value);
             const leverage = parseFloat(document.getElementById('leverage').value);
+            const errorDiv = document.getElementById('position-error');
 
-            // 입력 값 유효성 검사
             if (isNaN(balance) || isNaN(stopLossPercent) || isNaN(riskLevelPercent) || isNaN(leverage) || balance <= 0 || stopLossPercent <= 0 || riskLevelPercent <= 0 || leverage < 1) {
-                // 유효하지 않은 입력이 있을 경우, 결과 필드를 초기화합니다.
                 document.getElementById('maxLoss').value = '';
                 document.getElementById('positionSize').value = '';
                 document.getElementById('requiredMargin').value = '';
-                // 사용자에게 유효한 값을 입력하라는 메시지를 표시할 수 있습니다.
-                // (alert 대신 UI에 메시지를 표시하는 것이 더 좋습니다)
-                if (!document.querySelector('.error-message')) {
-                    const button = document.querySelector('.calculate-btn');
-                    const errorDiv = document.createElement('div');
-                    errorDiv.textContent = '모든 필드에 0보다 큰 유효한 숫자를 입력해주세요. (레버리지는 1 이상)';
-                    errorDiv.style.color = 'red';
-                    errorDiv.style.textAlign = 'center';
-                    errorDiv.style.marginTop = '10px';
-                    errorDiv.className = 'error-message';
-                    button.parentNode.insertBefore(errorDiv, button.nextSibling);
-                    setTimeout(() => errorDiv.remove(), 3000);
-                }
-                return;
+                errorDiv.textContent = '모든 필드에 유효한 숫자를 입력해주세요.';
+                setTimeout(() => { errorDiv.textContent = '' }, 3000);
+                return false; // 계산 실패
             }
-             // 에러 메시지 제거
-            const existingError = document.querySelector('.error-message');
-            if(existingError) existingError.remove();
-
-
-            // --- 계산 로직 ---
-            // 1. 최대 손실 금액 계산 ($)
-            // (거래 잔고 * 위험 수준 %)
+            errorDiv.textContent = '';
             const maxLoss = balance * (riskLevelPercent / 100);
-
-            // 2. 총 포지션 규모 계산 ($)
-            // (최대 손실 금액 / 손절매 %)
             const positionSize = maxLoss / (stopLossPercent / 100);
-
-            // 3. 필수 증거금 계산 ($)
-            // (총 포지션 규모 / 레버리지)
             const requiredMargin = positionSize / leverage;
-            
-            // --- 결과 표시 ---
-            // 계산된 값을 소수점 둘째 자리까지 포맷팅하여 표시합니다.
             document.getElementById('maxLoss').value = `$${maxLoss.toFixed(2)}`;
             document.getElementById('positionSize').value = `$${positionSize.toFixed(2)}`;
             document.getElementById('requiredMargin').value = `$${requiredMargin.toFixed(2)}`;
+            return true; // 계산 성공
         }
+        
+        function calculateAndSavePosition() {
+            const success = calculatePosition(true); // 계산을 먼저 시도
+            if (success) {
+                savePositionHistory(); // 계산 성공 시에_만 저장
+            }
+        }
+        
+        // --- 이벤트 리스너 설정 ---
+        document.getElementById('save-history-btn').addEventListener('click', saveRiskHistory);
+        document.getElementById('clear-history-btn').addEventListener('click', clearRiskHistory);
+        document.getElementById('reset-prices-btn').addEventListener('click', resetPrices);
+
+        const riskCalcInputs = document.querySelectorAll('#riskCalculator input');
+        riskCalcInputs.forEach(input => {
+            input.addEventListener('input', calculateRisk);
+        });
+        
+        const positionInputs = document.querySelectorAll('#positionCalculator input');
+        positionInputs.forEach(input => {
+            input.addEventListener('input', () => calculatePosition(false)); // 자동 계산은 하되, 저장하지 않음
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+             showCalculator('riskCalculator');
+             calculateRisk();
+        });
     </script>
 </body>
 </html>
-
-
 
