@@ -133,9 +133,6 @@
         .stop-loss-amount {
              color: #0056b3;
         }
-        .total-capital-row {
-            border-bottom: 2px solid #007bff;
-        }
         .description-text {
             font-size: 0.8em;
             font-weight: normal;
@@ -260,17 +257,6 @@
         .explanation-section b {
             color: #2d3748;
         }
-        #positionCalculator .results-section td:first-child { font-weight: 600; color: #4a5568;}
-        #positionCalculator .auto-field { 
-            background-color: #f7fafc; 
-            color: #2d3748; 
-            font-weight: 700; 
-            border: 1px solid #e2e8f0; 
-            padding: 8px 14px; 
-            border-radius: 5px; 
-            display: block; 
-            text-align: right; 
-        }
         .error-message { color: red; font-size: 0.9rem; text-align: center; margin-top: 10px; height: 20px; }
 
         /* 모바일 반응형 디자인 */
@@ -280,59 +266,23 @@
             h1 { font-size: 1.5rem; }
             .tab-btn { font-size: 0.9rem; }
 
-            /* 반응형 테이블 스타일 */
-            .responsive-table thead {
-                display: none;
-            }
-            .responsive-table tr {
-                display: block;
-                border-bottom: 2px solid #007bff;
-                margin-bottom: 1rem;
-                padding-bottom: 1rem;
-            }
-             .responsive-table tr:last-child {
-                margin-bottom: 0;
-                padding-bottom: 0;
-                border-bottom: none;
-            }
-            .responsive-table td {
-                display: block;
-                text-align: right;
-                border: none;
-                padding: 5px;
-                position: relative;
-                padding-left: 50%;
-            }
+            .responsive-table thead { display: none; }
+            .responsive-table tr { display: block; border-bottom: 1px solid #eee; margin-bottom: 1rem; padding-bottom: 1rem; }
+            .responsive-table tr:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+            .responsive-table td { display: block; text-align: right; border: none; padding: 5px; position: relative; padding-left: 50%; }
             .responsive-table td:first-child {
-                padding: 10px 0;
-                margin-bottom: 10px;
-                text-align: left;
-                font-size: 1.1em;
-                font-weight: 600;
-                color: #333;
-                background-color: transparent;
-                border-bottom: 1px solid #eee;
+                padding: 10px 0; margin-bottom: 10px; text-align: left; font-size: 1.1em;
+                font-weight: 600; color: #333; background-color: transparent; border-bottom: 1px solid #eee;
             }
             .responsive-table td::before {
-                content: attr(data-label);
-                position: absolute;
-                left: 5px;
-                width: calc(50% - 10px);
-                text-align: left;
-                font-weight: 600;
-                color: #555;
+                content: attr(data-label); position: absolute; left: 5px; width: calc(50% - 10px);
+                text-align: left; font-weight: 600; color: #555;
             }
-             .responsive-table td:first-child::before,
-             .responsive-table td[colspan="2"]::before,
-             .responsive-table .no-label::before {
-                display: none;
-            }
-            .responsive-table td[colspan="2"] {
-                padding-left: 5px;
-            }
-             .input-with-button {
-                width: 100%;
-            }
+            .responsive-table td:first-child::before,
+            .responsive-table td[colspan="2"]::before,
+            .responsive-table .no-label::before { display: none; }
+            .responsive-table td[colspan="2"] { padding-left: 5px; }
+            .input-with-button { width: 100%; }
         }
     </style>
 </head>
@@ -354,12 +304,12 @@
                         <tr><th>항목</th><th>원화 (KRW)</th><th>달러 (USD)</th></tr>
                     </thead>
                     <tbody>
-                        <tr class="total-capital-row">
+                        <tr>
                             <td>총 투자금액 (입력)</td>
                             <td data-label="원화 (KRW)"><input type="text" id="won-total-capital" placeholder="10,000,000"></td>
                             <td data-label="달러 (USD)"><input type="text" id="usd-total-capital" placeholder="10,000"></td>
                         </tr>
-                        <tr class="total-capital-row">
+                        <tr>
                             <td>리스크 비율 (입력) [%] <div class="description-text">기본값 1% (1-3% 추천)</div></td>
                             <td data-label="원화 (KRW)"><input type="number" id="won-risk-percent" placeholder="1" step="0.1"></td>
                             <td data-label="달러 (USD)"><input type="number" id="usd-risk-percent" placeholder="1" step="0.1"></td>
@@ -412,26 +362,39 @@
             <div id="positionCalculator" class="calculator-content">
                 <h1>포지션 크기 계산기</h1>
                 <table class="responsive-table">
+                    <thead>
+                        <tr><th>항목</th><th>원화 (KRW)</th><th>달러 (USD)</th></tr>
+                    </thead>
                     <tbody>
                         <tr>
                             <td>투자 종목</td>
-                            <td class="no-label">
+                            <td colspan="2">
                                 <div class="input-with-button">
                                     <input type="text" id="position-item" placeholder="예: Apple, Tesla">
                                     <button id="reset-position-btn" class="reset-button" title="입력값 초기화">초기화</button>
                                 </div>
                             </td>
                         </tr>
-                        <tr><td>총 투자금액 ($)</td><td data-label="금액 ($)"><input type="text" id="balance" placeholder="1,000"></td></tr>
+                        <tr>
+                            <td>총 투자금액</td>
+                            <td data-label="원화 (KRW)"><input type="text" id="position-balance-won" placeholder="1,000,000"></td>
+                            <td data-label="달러 (USD)"><input type="text" id="position-balance-usd" placeholder="1,000"></td>
+                        </tr>
                         <tr>
                             <td>손절매 (%) <div class="description-text">포지션 규모 계산에 사용</div></td>
-                            <td data-label="손절매 (%)"><input type="number" id="stopLoss" placeholder="2.5"></td>
+                            <td data-label="원화 (KRW)"><input type="number" id="position-stopLoss-won" placeholder="2.5"></td>
+                            <td data-label="달러 (USD)"><input type="number" id="position-stopLoss-usd" placeholder="2.5"></td>
                         </tr>
                         <tr>
-                            <td>위험 수준 (%) <div class="description-text">총 자산 대비 이번 거래에서 허용 손실</div></td>
-                            <td data-label="위험 수준 (%)"><input type="number" id="riskLevel" placeholder="1"></td>
+                            <td>위험 수준 (%) <div class="description-text">최대 손실액 계산에 사용</div></td>
+                            <td data-label="원화 (KRW)"><input type="number" id="position-riskLevel-won" placeholder="1"></td>
+                            <td data-label="달러 (USD)"><input type="number" id="position-riskLevel-usd" placeholder="1"></td>
                         </tr>
-                        <tr><td>레버리지 (x)</td><td data-label="레버리지 (x)"><input type="number" id="leverage" placeholder="20"></td></tr>
+                        <tr>
+                            <td>레버리지 (x)</td>
+                            <td data-label="원화 (KRW)"><input type="number" id="position-leverage-won" placeholder="20"></td>
+                            <td data-label="달러 (USD)"><input type="number" id="position-leverage-usd" placeholder="20"></td>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -441,17 +404,32 @@
                 <div class="results-section">
                     <h2>계산 결과</h2>
                     <table class="responsive-table">
+                         <thead>
+                            <tr><th>결과 항목</th><th>원화 (KRW)</th><th>달러 (USD)</th></tr>
+                        </thead>
                         <tbody>
-                            <tr><td>최대 손실 ($)</td><td id="maxLoss" class="auto-field"></td></tr>
-                            <tr><td>총 포지션 규모 ($)</td><td id="positionSize" class="auto-field"></td></tr>
-                            <tr><td>필수 증거금 ($)</td><td id="requiredMargin" class="auto-field"></td></tr>
+                            <tr>
+                                <td>최대 손실</td>
+                                <td data-label="원화 (KRW)" id="maxLoss-won" class="auto-field stop-loss-amount"></td>
+                                <td data-label="달러 (USD)" id="maxLoss-usd" class="auto-field stop-loss-amount"></td>
+                            </tr>
+                            <tr>
+                                <td>총 포지션 규모</td>
+                                <td data-label="원화 (KRW)" id="positionSize-won" class="auto-field"></td>
+                                <td data-label="달러 (USD)" id="positionSize-usd" class="auto-field"></td>
+                            </tr>
+                            <tr>
+                                <td>필수 증거금</td>
+                                <td data-label="원화 (KRW)" id="requiredMargin-won" class="auto-field"></td>
+                                <td data-label="달러 (USD)" id="requiredMargin-usd" class="auto-field"></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="explanation-section">
                     <h2>입력 설명</h2>
-                    <p><b>총 투자금액 ($):</b> 레버리지 제외 실제 계좌자산</p>
+                    <p><b>총 투자금액:</b> 레버리지 제외 실제 계좌자산</p>
                     <p><b>손절매 (%):</b> 손절폭이 좁을수록 포지션 규모는 커짐</p>
                     <p><b>위험 수준 (%):</b> 이번 거래에서 감수할 최대 손실 비율</p>
                     <p><b>레버리지 (x):</b> 포지션/증거금 비율</p>
@@ -573,7 +551,8 @@
                     const element = document.getElementById(fieldMap[fieldKey]);
                     if (element) {
                         const value = entry[fieldKey] || '';
-                        if (['wonCapital', 'usdCapital', 'wonEntry', 'usdEntry', 'wonExit', 'usdExit', 'balance', 'roiEntry', 'roiTarget', 'roiAmount'].includes(fieldKey)) {
+                        if (['wonCapital', 'usdCapital', 'wonEntry', 'usdEntry', 'wonExit', 'usdExit', 'balanceWon', 'balanceUsd', 'roiEntry', 'roiTarget', 'roiAmount',
+                             'positionBalanceWon', 'positionBalanceUsd'].includes(fieldKey)) {
                             element.value = formatNumber(value);
                         } else {
                             element.value = value;
@@ -619,7 +598,13 @@
             },
             positionCalculator: {
                 historyKey: 'positionHistory', title: '계산 내역 (포지션 크기)',
-                fields: { item: 'position-item', balance: 'balance', stopLoss: 'stopLoss', riskLevel: 'riskLevel', leverage: 'leverage' },
+                fields: { 
+                    item: 'position-item', 
+                    balanceWon: 'position-balance-won', balanceUsd: 'position-balance-usd', 
+                    stopLossWon: 'position-stopLoss-won', stopLossUsd: 'position-stopLoss-usd',
+                    riskLevelWon: 'position-riskLevel-won', riskLevelUsd: 'position-riskLevel-usd',
+                    leverageWon: 'position-leverage-won', leverageUsd: 'position-leverage-usd'
+                },
                 loadFn: () => loadHistory(calculators.positionCalculator.historyKey, document.getElementById('history-list'), calculators.positionCalculator.restoreFn),
                 restoreFn: (id) => restoreFromHistory(calculators.positionCalculator.historyKey, id, calculators.positionCalculator.fields, () => calculatePosition(false)),
                 clearFn: () => clearHistory(calculators.positionCalculator.historyKey, calculators.positionCalculator.loadFn),
@@ -712,29 +697,57 @@
         }
 
         function calculatePosition(shouldWarn = true) {
-            const balance = parseFloat(unformat(document.getElementById('balance').value)) || 0;
-            const slP = parseFloat(unformat(document.getElementById('stopLoss').value)) || 0;
-            const riskP = parseFloat(unformat(document.getElementById('riskLevel').value)) || 0;
-            const lev = parseFloat(unformat(document.getElementById('leverage').value)) || 0;
+            const balanceWon = parseFloat(unformat(document.getElementById('position-balance-won').value)) || 0;
+            const balanceUsd = parseFloat(unformat(document.getElementById('position-balance-usd').value)) || 0;
+            const slPWon = parseFloat(unformat(document.getElementById('position-stopLoss-won').value)) || 0;
+            const slPUsd = parseFloat(unformat(document.getElementById('position-stopLoss-usd').value)) || 0;
+            const riskPWon = parseFloat(unformat(document.getElementById('position-riskLevel-won').value)) || 0;
+            const riskPUsd = parseFloat(unformat(document.getElementById('position-riskLevel-usd').value)) || 0;
+            const levWon = parseFloat(unformat(document.getElementById('position-leverage-won').value)) || 0;
+            const levUsd = parseFloat(unformat(document.getElementById('position-leverage-usd').value)) || 0;
             const err = document.getElementById('position-error');
             
-            const resultsIds = ['maxLoss', 'positionSize', 'requiredMargin'];
+            const resultsIds = ['maxLoss-won', 'positionSize-won', 'requiredMargin-won', 'maxLoss-usd', 'positionSize-usd', 'requiredMargin-usd'];
             
-            if (balance <= 0 || slP <= 0 || riskP <= 0 || lev < 1) {
-                if (shouldWarn && (document.getElementById('balance').value || document.getElementById('stopLoss').value || document.getElementById('riskLevel').value) ) {
+            let isValid = true;
+            if((balanceWon <= 0 && balanceUsd <= 0) || (slPWon <= 0 && slPUsd <= 0) || (riskPWon <= 0 && riskPUsd <= 0) || (levWon < 1 && levUsd < 1)) {
+                isValid = false;
+            }
+
+            if (!isValid) {
+                if (shouldWarn) {
                     err.textContent = '모든 필드에 유효한 숫자를 입력해주세요.'; setTimeout(() => { err.textContent = '' }, 3000);
                 }
                 resultsIds.forEach(id => document.getElementById(id).textContent = '');
                 return false;
             }
-            err.textContent = '';
-            const maxLoss = balance * (riskP / 100);
-            const positionSize = maxLoss / (slP / 100);
-            const requiredMargin = positionSize / lev;
 
-            document.getElementById('maxLoss').textContent = `$${maxLoss.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
-            document.getElementById('positionSize').textContent = `$${positionSize.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
-            document.getElementById('requiredMargin').textContent = `$${requiredMargin.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+            err.textContent = '';
+            
+            // KRW Calculation
+            if(balanceWon > 0 && slPWon > 0 && riskPWon > 0 && levWon >= 1) {
+                const maxLossWon = balanceWon * (riskPWon / 100);
+                const positionSizeWon = maxLossWon / (slPWon / 100);
+                const requiredMarginWon = positionSizeWon / levWon;
+                document.getElementById('maxLoss-won').textContent = `₩${maxLossWon.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}`;
+                document.getElementById('positionSize-won').textContent = `₩${positionSizeWon.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}`;
+                document.getElementById('requiredMargin-won').textContent = `₩${requiredMarginWon.toLocaleString('ko-KR', { maximumFractionDigits: 0 })}`;
+            } else {
+                 ['maxLoss-won', 'positionSize-won', 'requiredMargin-won'].forEach(id => document.getElementById(id).textContent = '');
+            }
+
+            // USD Calculation
+            if (balanceUsd > 0 && slPUsd > 0 && riskPUsd > 0 && levUsd >= 1) {
+                const maxLossUsd = balanceUsd * (riskPUsd / 100);
+                const positionSizeUsd = maxLossUsd / (slPUsd / 100);
+                const requiredMarginUsd = positionSizeUsd / levUsd;
+                document.getElementById('maxLoss-usd').textContent = `$${maxLossUsd.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+                document.getElementById('positionSize-usd').textContent = `$${positionSizeUsd.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+                document.getElementById('requiredMargin-usd').textContent = `$${requiredMarginUsd.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+            } else {
+                 ['maxLoss-usd', 'positionSize-usd', 'requiredMargin-usd'].forEach(id => document.getElementById(id).textContent = '');
+            }
+            
             return true;
         }
 
@@ -789,7 +802,12 @@
             calculateRisk();
         }
         function resetPositionInputs() {
-            ['position-item', 'balance', 'stopLoss', 'riskLevel', 'leverage'].forEach(id => document.getElementById(id).value = '');
+            const fields = calculators.positionCalculator.fields;
+            for(const key in fields) {
+                 if(document.getElementById(fields[key])) {
+                    document.getElementById(fields[key]).value = '';
+                 }
+            }
             calculatePosition(false);
         }
         function resetROIInputs() {
@@ -815,7 +833,7 @@
             document.querySelectorAll('#positionCalculator input').forEach(inp => inp.addEventListener('input', () => calculatePosition(false)));
             document.querySelectorAll('#roiCalculator input, #roiCalculator select').forEach(inp => inp.addEventListener('input', () => calculateROI(false)));
 
-            const inputsToFormat = ['won-total-capital', 'usd-total-capital', 'won-entry', 'usd-entry', 'won-exit', 'usd-exit', 'balance', 'roi-entry', 'roi-target', 'roi-amount'];
+            const inputsToFormat = ['won-total-capital', 'usd-total-capital', 'won-entry', 'usd-entry', 'won-exit', 'usd-exit', 'position-balance-won', 'position-balance-usd', 'roi-entry', 'roi-target', 'roi-amount'];
             inputsToFormat.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -828,9 +846,9 @@
                     });
                 }
             });
-
+            
+            // 초기 탭 설정
             showCalculator('riskCalculator');
-            calculateRisk();
         });
     </script>
 </body>
