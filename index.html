@@ -374,7 +374,12 @@
                      <tbody>
                         <tr>
                             <td>투자 종목</td>
-                            <td><input type="text" id="position-item" placeholder="예: Apple, Tesla"></td>
+                            <td>
+                                <div class="input-with-button">
+                                    <input type="text" id="position-item" placeholder="예: Apple, Tesla">
+                                    <button id="reset-position-btn" class="reset-button" title="입력값 초기화">초기화</button>
+                                </div>
+                            </td>
                         </tr>
                         <tr>
                             <td>총 투자금액 ($)</td>
@@ -611,6 +616,16 @@
             document.getElementById('usd-exit').value = '';
             calculateRisk();
         }
+        
+        // --- 포지션 크기 입력값 초기화 로직 ---
+        function resetPositionInputs() {
+            document.getElementById('position-item').value = '';
+            document.getElementById('balance').value = '';
+            document.getElementById('stopLoss').value = '';
+            document.getElementById('riskLevel').value = '';
+            document.getElementById('leverage').value = '';
+            calculatePosition(false);
+        }
 
         // --- 리스크 관리 계산기 로직 ---
         function calculateRisk() {
@@ -671,8 +686,10 @@
                 document.getElementById('maxLoss').value = '';
                 document.getElementById('positionSize').value = '';
                 document.getElementById('requiredMargin').value = '';
-                errorDiv.textContent = '모든 필드에 유효한 숫자를 입력해주세요.';
-                setTimeout(() => { errorDiv.textContent = '' }, 3000);
+                if(shouldSave) { // 버튼 클릭시에만 에러 메시지 표시
+                    errorDiv.textContent = '모든 필드에 유효한 숫자를 입력해주세요.';
+                    setTimeout(() => { errorDiv.textContent = '' }, 3000);
+                }
                 return false; // 계산 실패
             }
             errorDiv.textContent = '';
@@ -696,6 +713,7 @@
         document.getElementById('save-history-btn').addEventListener('click', saveRiskHistory);
         document.getElementById('clear-history-btn').addEventListener('click', clearRiskHistory);
         document.getElementById('reset-prices-btn').addEventListener('click', resetPrices);
+        document.getElementById('reset-position-btn').addEventListener('click', resetPositionInputs);
 
         const riskCalcInputs = document.querySelectorAll('#riskCalculator input');
         riskCalcInputs.forEach(input => {
