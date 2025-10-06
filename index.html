@@ -9,8 +9,8 @@
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column; /* 푸터를 위해 세로 정렬로 변경 */
+            align-items: center; /* 가로 중앙 정렬 */
             min-height: 100vh;
             margin: 0;
             background-color: #f7f9fc;
@@ -39,6 +39,13 @@
             color: #333;
             margin-top: 0;
             margin-bottom: 30px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-top: -20px;
+            margin-bottom: 30px;
+            font-size: 0.95em;
         }
         
         /* 탭 네비게이션 스타일 */
@@ -259,6 +266,21 @@
         }
         .error-message { color: red; font-size: 0.9rem; text-align: center; margin-top: 10px; height: 20px; }
 
+        /* 푸터 스타일 추가 */
+        .footer {
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px 0;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+
+
         /* 모바일 반응형 디자인 */
         @media (max-width: 650px) {
             body { padding: 10px; }
@@ -299,6 +321,7 @@
             <!-- ===== 1) 리스크 관리 ===== -->
             <div id="riskCalculator" class="calculator-content active">
                 <h1>리스크 관리 투자 계산기</h1>
+                <p class="subtitle">투자의 핵심은 자금 관리입니다. 무리한 베팅을 피하고 리스크를 관리하여 시장에서 오래 살아남으세요.</p>
                 <table class="responsive-table">
                     <thead>
                         <tr><th>항목</th><th>원화 (KRW)</th><th>달러 (USD)</th></tr>
@@ -361,6 +384,7 @@
             <!-- ===== 2) 포지션 크기 ===== -->
             <div id="positionCalculator" class="calculator-content">
                 <h1>포지션 크기 계산기</h1>
+                <p class="subtitle">투자의 핵심은 자금 관리입니다. 무리한 베팅을 피하고 리스크를 관리하여 시장에서 오래 살아남으세요.</p>
                 <table class="responsive-table">
                     <thead>
                         <tr><th>항목</th><th>원화 (KRW)</th><th>달러 (USD)</th></tr>
@@ -439,6 +463,7 @@
             <!-- ===== 3) 수익률 계산기(신규) ===== -->
             <div id="roiCalculator" class="calculator-content">
                 <h1>수익률 계산기 (목표가 기준)</h1>
+                <p class="subtitle">투자의 핵심은 자금 관리입니다. 무리한 베팅을 피하고 리스크를 관리하여 시장에서 오래 살아남으세요.</p>
                 <table class="responsive-table">
                     <tbody>
                         <tr>
@@ -506,6 +531,11 @@
             <button id="clear-history-btn" class="clear-history-btn">내역 전체 삭제</button>
         </div>
     </div>
+    
+    <footer class="footer">
+        <p>&copy; 2025 dwLab. All Rights Reserved.</p>
+        <p>문의사항 : dokwon@dokwon.co.kr</p>
+    </footer>
 
     <script>
         /* ===== 공통 숫자 포맷 ===== */
@@ -710,13 +740,13 @@
             const resultsIds = ['maxLoss-won', 'positionSize-won', 'requiredMargin-won', 'maxLoss-usd', 'positionSize-usd', 'requiredMargin-usd'];
             
             let isValid = true;
-            if((balanceWon <= 0 && balanceUsd <= 0) || (slPWon <= 0 && slPUsd <= 0) || (riskPWon <= 0 && riskPUsd <= 0) || (levWon < 1 && levUsd < 1)) {
+            if((balanceWon <= 0 && balanceUsd <= 0)) {
                 isValid = false;
             }
 
             if (!isValid) {
                 if (shouldWarn) {
-                    err.textContent = '모든 필드에 유효한 숫자를 입력해주세요.'; setTimeout(() => { err.textContent = '' }, 3000);
+                    err.textContent = '총 투자금액을 입력해주세요.'; setTimeout(() => { err.textContent = '' }, 3000);
                 }
                 resultsIds.forEach(id => document.getElementById(id).textContent = '');
                 return false;
@@ -802,12 +832,8 @@
             calculateRisk();
         }
         function resetPositionInputs() {
-            const fields = calculators.positionCalculator.fields;
-            for(const key in fields) {
-                 if(document.getElementById(fields[key])) {
-                    document.getElementById(fields[key]).value = '';
-                 }
-            }
+            ['position-item', 'position-balance-won', 'position-balance-usd', 'position-stopLoss-won', 'position-stopLoss-usd',
+             'position-riskLevel-won', 'position-riskLevel-usd', 'position-leverage-won', 'position-leverage-usd'].forEach(id => document.getElementById(id).value = '');
             calculatePosition(false);
         }
         function resetROIInputs() {
